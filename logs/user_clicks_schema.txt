@@ -1,0 +1,8 @@
+table-name: user_clicks
+version: 1
+schema: {
+	type: string
+	user: string
+	data: string
+	result: string
+}

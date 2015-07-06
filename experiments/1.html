@@ -3,11 +3,18 @@
 <head>
   <title>Sample Page</title>
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
-  <script src="../js/galleria/galleria-1.4.2.js"></script>
-  <script src="../js/jsSample.js"></script>
+  <script src="../js/lib/galleria/galleria-1.4.2.js"></script>
+  <script src="../js/lib/log4javascript-1.4.13/js/log4javascript.js"></script>
+  <script src="../js/functions.js"></script>
 </head>
 <body>
 <div class="galleria">
+<script type="text/javascript">
+var popUpLog = log4javascript.getDefaultLogger();
+var fileLog = log4javascript.getLogger();
+var ajaxAppender = new log4javascript.AjaxAppender("loggingFunctions.php");
+fileLog.addAppender(ajaxAppender);
+</script>
 <script>
 var data = [
     {
@@ -29,13 +36,26 @@ var data = [
         link: 'http://medium.com'
     },
 ];
-Galleria.loadTheme('../js/galleria/themes/classic/galleria.classic.min.js');
-
+Galleria.loadTheme('../js/lib/galleria/themes/classic/galleria.classic.min.js');
 Galleria.configure('popupLinks', true);
 Galleria.run('.galleria', {
     dataSource: data,
     width:$(window).width(),
-    height:$(window).height()
+    height:$(window).height(),
+    extend:function(options) {
+    	this.bind('image', function(e) {
+    		popUpLog.info(formatLogStatement("transition", "user1", e["index"], "null"));
+    		fileLog.info(formatLogStatement("transition", "user1", e["index"], "null"));
+    		$.ajax({
+				type: "POST",
+				url: "loggingFunctions.php",
+				data: formatLogStatement("transition", "user1", e["index"], "null"),
+				success: function(result) {
+					alert (result);
+				}
+			});
+    	});
+    }
 });
 
 </script>
